@@ -87,7 +87,8 @@ def run_scaled_dot_product_attention(
         with the output of running your scaled dot product attention
         implementation with the provided key, query, and value tensors.
     """
-    raise NotImplementedError
+    output = cs336_basics.scaled_dot_product_attention(Q, K, V, mask, pdrop)
+    return output
 
 
 def run_multihead_self_attention(

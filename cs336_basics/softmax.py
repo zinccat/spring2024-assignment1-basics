@@ -1,6 +1,6 @@
 import torch
 
-def softmax(v: torch.Tensor, dim: int) -> torch.Tensor:
+def softmax(v: torch.Tensor, dim: int = -1) -> torch.Tensor:
     v_max = v.max(axis=dim, keepdim=True).values
     v = v - v_max
     exp_v = torch.exp(v)
