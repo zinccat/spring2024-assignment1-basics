@@ -26,3 +26,45 @@ class TransformerBlock(nn.Module):
         y = x + self.dropout(self.mhsa(self.rmsnorm1(x)))
         y = y + self.dropout(self.ffn(self.rmsnorm2(y)))
         return y
+
+class Transformer(nn.Module):
+    def __init__(self, vocab_size: int, context_length: int, d_model: int, num_layers: int, num_heads: int, d_ff: int, attn_pdrop: float, residual_pdrop: float, weights: Dict[str, torch.FloatTensor] = None):
+        super(Transformer, self).__init__()
+        self.token_embeddings = nn.Embedding(vocab_size, d_model)
+        self.position_embeddings = nn.Embedding(context_length, d_model)
+        self.dropout = nn.Dropout(residual_pdrop)
+        transformer_layers = []
+        self.norm = RMSNorm(d_model)
+        self.head = nn.Linear(d_model, vocab_size, bias=False)
+
+        if weights:
+            self.token_embeddings.weight.data = weights['token_embeddings.weight']
+            self.position_embeddings.weight.data = weights['position_embeddings.weight']
+            for i in range(num_layers):
+                transformer_weight = {
+                    'attn.q_proj.weight': weights[f'layers.{i}.attn.q_proj.weight'],
+                    'attn.k_proj.weight': weights[f'layers.{i}.attn.k_proj.weight'],
+                    'attn.v_proj.weight': weights[f'layers.{i}.attn.v_proj.weight'],
+                    'attn.output_proj.weight': weights[f'layers.{i}.attn.output_proj.weight'],
+                    'ln1.weight': weights[f'layers.{i}.ln1.weight'],
+                    'ln2.weight': weights[f'layers.{i}.ln2.weight'],
+                    'ffn.w1.weight': weights[f'layers.{i}.ffn.w1.weight'],
+                    'ffn.w2.weight':weights[f'layers.{i}.ffn.w2.weight']
+                }
+                transformer_layers.append(TransformerBlock(d_model, num_heads, d_ff, attn_pdrop, residual_pdrop, transformer_weight))
+                self.norm.weight.data = weights['ln_final.weight']
+                self.head.weight.data = weights['lm_head.weight']
+        else:
+            transformer_layers.append(TransformerBlock(d_model, num_heads, d_ff, attn_pdrop, residual_pdrop))
+
+        self.transformer = nn.Sequential(*transformer_layers)
+        
+    def forward(self, in_indices):
+        token_embedding = self.token_embeddings(in_indices)
+        position_embedding = self.position_embeddings(torch.arange(in_indices.shape[1], device=in_indices.device))
+        embedding = token_embedding + position_embedding
+        embedding = self.dropout(embedding)
+        x = self.transformer(embedding)
+        x = self.norm(x)
+        x = self.head(x)
+        return x

@@ -305,7 +305,8 @@ def run_transformer_lm(
         FloatTensor of shape (batch size, sequence_length, vocab_size) with the predicted unnormalized
         next-word distribution for each token.
     """
-    raise NotImplementedError
+    transformer = cs336_basics.Transformer(vocab_size, context_length, d_model, num_layers, num_heads, d_ff, attn_pdrop, residual_pdrop, weights)
+    return transformer(in_indices)
 
 
 def run_rmsnorm(

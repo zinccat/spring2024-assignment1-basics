@@ -3,7 +3,7 @@ from .gelu import gelu
 from .ffn import FFN
 from .softmax import softmax
 from .attention import scaled_dot_product_attention, MultiHead, MultiHeadSelfAttention
-from .transformer import TransformerBlock
+from .transformer import TransformerBlock, Transformer
 
 __all__ = [
     'RMSNorm',
@@ -13,5 +13,6 @@ __all__ = [
     'scaled_dot_product_attention',
     'MultiHead'
     'MultiHeadSelfAttention',
-    'TransformerBlock'
+    'TransformerBlock',
+    'Transformer'
 ]
