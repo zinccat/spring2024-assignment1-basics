@@ -211,8 +211,8 @@ def run_transformer_block(
         FloatTensor of shape (batch_size, sequence_length, d_model) with the output of
         running the Transformer block on the input features.
     """
-    mhsa = cs336_basics.MultiHeadSelfAttention(d_model, num_heads, d_ff, attn_pdrop, residual_pdrop, weights)
-    return mhsa(in_features)
+    transformer_block = cs336_basics.TransformerBlock(d_model, num_heads, d_ff, attn_pdrop, residual_pdrop, weights)
+    return transformer_block(in_features)
 
 
 def run_transformer_lm(
