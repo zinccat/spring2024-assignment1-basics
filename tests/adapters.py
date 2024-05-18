@@ -138,7 +138,8 @@ def run_multihead_self_attention(
         torch.FloatTensor with the output of running your optimized, batched multi-headed attention
         implementation with the given QKV projection weights and input features.
     """
-    raise NotImplementedError
+    mhsa = cs336_basics.MultiHeadSelfAttention(d_model, num_heads, attn_pdrop, weights)
+    return mhsa(in_features)
 
 
 def run_transformer_block(
@@ -210,7 +211,8 @@ def run_transformer_block(
         FloatTensor of shape (batch_size, sequence_length, d_model) with the output of
         running the Transformer block on the input features.
     """
-    raise NotImplementedError
+    mhsa = cs336_basics.MultiHeadSelfAttention(d_model, num_heads, d_ff, attn_pdrop, residual_pdrop, weights)
+    return mhsa(in_features)
 
 
 def run_transformer_lm(
