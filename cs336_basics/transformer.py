@@ -12,16 +12,15 @@ class TransformerBlock(nn.Module):
         self.rmsnorm1 = RMSNorm(d_model)
         self.dropout = nn.Dropout(residual_pdrop)
         self.rmsnorm2 = RMSNorm(d_model)
-        self.ffn = FFN(d_model, d_ff)
+        ffn_weights = {'w1.weight': weights['ffn.w1.weight'], 'w2.weight': weights['ffn.w2.weight']} if weights else None
+        self.ffn = FFN(d_model, d_ff, ffn_weights)
         if weights is not None:
-            self.mhsa.wq.data = weights['attn.q_proj.weight'].T
-            self.mhsa.wk.data = weights['attn.k_proj.weight'].T
-            self.mhsa.wv.data = weights['attn.v_proj.weight'].T
-            self.mhsa.wo.data = weights['attn.output_proj.weight'].T
+            self.mhsa.wq.weight.data = weights['attn.q_proj.weight']
+            self.mhsa.wk.weight.data = weights['attn.k_proj.weight']
+            self.mhsa.wv.weight.data = weights['attn.v_proj.weight']
+            self.mhsa.wo.weight.data = weights['attn.output_proj.weight']
             self.rmsnorm1.weight.data = weights['ln1.weight']
             self.rmsnorm2.weight.data = weights['ln2.weight']
-            self.ffn.w1.data = weights['ffn.w1.weight']
-            self.ffn.w2.data = weights['ffn.w2.weight']
 
     def forward(self, x):
         y = x + self.dropout(self.mhsa(self.rmsnorm1(x)))

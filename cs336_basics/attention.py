@@ -10,7 +10,6 @@ def scaled_dot_product_attention(q, k, v, mask=None, pdrop=None):
     scores = q@torch.swapaxes(k, -2, -1)
     scores = scores / math.sqrt(d_k)
     if mask is not None:
-        # print(scores.shape, mask.shape)
         scores = scores.masked_fill_(mask, float('-inf'))
     attn_weights = softmax(scores, dim=-1)
     if pdrop is not None:
@@ -25,24 +24,24 @@ class MultiHead(nn.Module):
         self.dk = self.dv = self.d_model // num_heads
         self.num_heads = num_heads
         self.attn_pdrop = attn_pdrop
-        self.wq = nn.Parameter(torch.randn(d_model, d_model))
-        self.wk = nn.Parameter(torch.randn(d_model, d_model))
-        self.wv = nn.Parameter(torch.randn(d_model, d_model))
-        self.wo = nn.Parameter(torch.randn(d_model, d_model))
+        self.wq = nn.Linear(d_model, d_model, False)
+        self.wk = nn.Linear(d_model, d_model, False)
+        self.wv = nn.Linear(d_model, d_model, False)
+        self.wo = nn.Linear(d_model, d_model, False)
         if weights is not None:
             for N in range(num_heads):
-                self.wq.data[:, N*self.dk:(N+1)*self.dk] = weights[f'q_heads.{N}.weight'].T
-                self.wk.data[:, N*self.dk:(N+1)*self.dk] = weights[f'k_heads.{N}.weight'].T
-                self.wv.data[:, N*self.dv:(N+1)*self.dv] = weights[f'v_heads.{N}.weight'].T
-            self.wo.data = weights['output_proj.weight'].T
+                self.wq.weight.data[N*self.dk:(N+1)*self.dk] = weights[f'q_heads.{N}.weight']
+                self.wk.weight.data[N*self.dk:(N+1)*self.dk] = weights[f'k_heads.{N}.weight']
+                self.wv.weight.data[N*self.dv:(N+1)*self.dv] = weights[f'v_heads.{N}.weight']
+            self.wo.weight.data = weights['output_proj.weight']
     
     def forward(self, q, k, v):
         batch_size = q.size(0)
         seq_len = q.size(1)
-        
-        q = q @ self.wq
-        k = k @ self.wk
-        v = v @ self.wv
+
+        q = self.wq(q)
+        k = self.wk(k)
+        v = self.wv(v)
         
         q = q.view(batch_size, seq_len, self.num_heads, self.dk).transpose(1, 2)
         k = k.view(batch_size, seq_len, self.num_heads, self.dk).transpose(1, 2)
@@ -51,7 +50,7 @@ class MultiHead(nn.Module):
         mask = torch.triu(torch.ones(seq_len, seq_len, dtype=torch.bool), diagonal=1)
         attn = scaled_dot_product_attention(q, k, v, mask, pdrop=self.attn_pdrop)
         attn = attn.transpose(1, 2).contiguous().view(batch_size, seq_len, self.d_model)
-        output = attn @ self.wo
+        output = self.wo(attn)
         return output
 
 

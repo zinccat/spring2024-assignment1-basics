@@ -7,15 +7,13 @@ class FFN(nn.Module):
         super(FFN, self).__init__()
         self.d_model = d_model
         self.d_ff = d_ff
-        if weights is not None:
-            self.w1 = nn.Parameter(weights['w1.weight'], requires_grad=True)
-            self.w2 = nn.Parameter(weights['w2.weight'], requires_grad=True)
-        else:
-            self.w1 = torch.nn.Parameter(torch.randn((d_ff, d_model)))
-            self.w2 = torch.nn.Parameter(torch.randn((d_model, d_ff)))
+        self.w1 = nn.Linear(d_ff, d_model, False)
+        self.w2 = nn.Linear(d_model, d_ff, False)
+        self.w1.weight.data = weights['w1.weight']
+        self.w2.weight.data = weights['w2.weight']
 
     def forward(self, in_features: torch.Tensor) -> torch.Tensor:
-        x = in_features@self.w1.T
+        x = self.w1(in_features)
         x = gelu(x)
-        output = x@self.w2.T
+        output = self.w2(x)
         return output
