@@ -7,6 +7,7 @@ from .transformer import TransformerBlock, Transformer
 from .cross_entropy import cross_entropy
 from .adamw import AdamW
 from .lr_cosine_schedule import lr_cosine_schedule
+from .gradient_clipping import gradient_clipping
 
 __all__ = [
     'RMSNorm',
@@ -20,5 +21,6 @@ __all__ = [
     'Transformer',
     'cross_entropy',
     'AdamW',
-    'lr_cosine_schedule'
+    'lr_cosine_schedule',
+    'gradient_clipping'
 ]
