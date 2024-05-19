@@ -6,6 +6,7 @@ from .attention import scaled_dot_product_attention, MultiHead, MultiHeadSelfAtt
 from .transformer import TransformerBlock, Transformer
 from .cross_entropy import cross_entropy
 from .adamw import AdamW
+from .lr_cosine_schedule import lr_cosine_schedule
 
 __all__ = [
     'RMSNorm',
@@ -18,5 +19,6 @@ __all__ = [
     'TransformerBlock',
     'Transformer',
     'cross_entropy',
-    'AdamW'
+    'AdamW',
+    'lr_cosine_schedule'
 ]
