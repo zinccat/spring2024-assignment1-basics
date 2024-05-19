@@ -19,7 +19,7 @@ def scaled_dot_product_attention(q, k, v, mask=None, pdrop=None):
 
 class MultiHead(nn.Module):
     def __init__(self, d_model: int, num_heads: int, attn_pdrop: float, weights: Dict[str, torch.FloatTensor] = None):
-        super(MultiHead, self).__init__()
+        super().__init__()
         self.d_model = d_model
         self.dk = self.dv = self.d_model // num_heads
         self.num_heads = num_heads

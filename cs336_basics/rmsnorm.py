@@ -3,7 +3,7 @@ import torch.nn as nn
 
 class RMSNorm(nn.Module):
     def __init__(self, d_model: int, eps: float = 1e-5, weight=None):
-        super(RMSNorm, self).__init__()
+        super().__init__()
         self.d_model = d_model
         if weight is not None:
             self.weight = weight

@@ -4,7 +4,7 @@ from cs336_basics import gelu
 
 class FFN(nn.Module):
     def __init__(self, d_model: int, d_ff: int, weights = None):
-        super(FFN, self).__init__()
+        super().__init__()
         self.d_model = d_model
         self.d_ff = d_ff
         self.w1 = nn.Linear(d_ff, d_model, False)

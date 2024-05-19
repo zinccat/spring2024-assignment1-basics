@@ -7,7 +7,7 @@ from cs336_basics import MultiHeadSelfAttention, RMSNorm, FFN
 
 class TransformerBlock(nn.Module):
     def __init__(self, d_model: int, num_heads: int, d_ff: int, attn_pdrop: float = None, residual_pdrop: float = None, weights: Dict[str, torch.FloatTensor] = None):
-        super(TransformerBlock, self).__init__()
+        super().__init__()
         self.mhsa = MultiHeadSelfAttention(d_model, num_heads, attn_pdrop)
         self.rmsnorm1 = RMSNorm(d_model)
         self.dropout = nn.Dropout(residual_pdrop)
@@ -29,7 +29,7 @@ class TransformerBlock(nn.Module):
 
 class Transformer(nn.Module):
     def __init__(self, vocab_size: int, context_length: int, d_model: int, num_layers: int, num_heads: int, d_ff: int, attn_pdrop: float, residual_pdrop: float, weights: Dict[str, torch.FloatTensor] = None):
-        super(Transformer, self).__init__()
+        super().__init__()
         self.token_embeddings = nn.Embedding(vocab_size, d_model)
         self.position_embeddings = nn.Embedding(context_length, d_model)
         self.dropout = nn.Dropout(residual_pdrop)
