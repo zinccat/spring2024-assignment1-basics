@@ -4,6 +4,7 @@ from .ffn import FFN
 from .softmax import softmax
 from .attention import scaled_dot_product_attention, MultiHead, MultiHeadSelfAttention
 from .transformer import TransformerBlock, Transformer
+from .cross_entropy import cross_entropy
 
 __all__ = [
     'RMSNorm',
@@ -14,5 +15,6 @@ __all__ = [
     'MultiHead'
     'MultiHeadSelfAttention',
     'TransformerBlock',
-    'Transformer'
+    'Transformer',
+    'cross_entropy'
 ]
